@@ -42,6 +42,7 @@ jobs:
     #    path: ./target/*.jar
   copy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
     - name: scp 파일 복사
       uses: appleboy/scp-action@v0.1.7
@@ -54,6 +55,7 @@ jobs:
 
   exec:
     runs-on: ubuntu-latest
+    needs: copy
     steps:
     - name: EC2 연결 후 실행
       uses: appleboy/ssh-action@v1.2.0

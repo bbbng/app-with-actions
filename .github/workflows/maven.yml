@@ -29,6 +29,17 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+      
+    - name: Jar file move
+      run: mv ./target/*.jar ./target/app.jar
+
+    - name: check jar
+      run: ls ./target
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: app.jar
+        path: ./target/*.jar
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     # - name: Update dependency graph

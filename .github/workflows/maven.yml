@@ -34,7 +34,7 @@ jobs:
       run: mv ./target/*.jar ./app.jar
 
     - name: check jar
-      run: ls ./target
+      run: ls .
 
     #- uses: actions/upload-artifact@v4
     #  with:

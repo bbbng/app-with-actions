@@ -31,15 +31,15 @@ jobs:
       run: mvn -B package --file pom.xml
       
     - name: Jar file move
-      run: mv ./target/*.jar ./target/app.jar
+      run: mv ./target/*.jar ./app.jar
 
     - name: check jar
       run: ls ./target
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: app.jar
-        path: ./target/*.jar
+    #- uses: actions/upload-artifact@v4
+    #  with:
+    #    name: app.jar
+    #    path: ./target/*.jar
 
     - name: scp 파일 복사
       uses: appleboy/scp-action@v0.1.7
@@ -47,7 +47,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
-        source: ./target/app.jar
+        source: ./app.jar
         target: /home/ubuntu/app
         
 

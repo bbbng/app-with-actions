@@ -40,7 +40,9 @@ jobs:
     #  with:
     #    name: app.jar
     #    path: ./target/*.jar
-
+  copy:
+    runs-on: ubuntu-latest
+    steps:
     - name: scp 파일 복사
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -50,6 +52,9 @@ jobs:
         source: ./app.jar
         target: /home/ubuntu/app
 
+  exec:
+    runs-on: ubuntu-latest
+    steps:
     - name: EC2 연결 후 실행
       uses: appleboy/ssh-action@v1.2.0
       with:
@@ -65,7 +70,7 @@ jobs:
           # 8080 포트를 사용하는 프로세스를 kill하는 명령
           sudo fuser -k -n tcp 8080 || true
           nohup java -jar app.jar > ./output.log 2>&1 &
-          rm -rf /home/ubuntu/app
+          # rm -rf /home/ubuntu/app
           
 
         

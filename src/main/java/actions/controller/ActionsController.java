@@ -24,7 +24,7 @@ public class ActionsController {
 	
 	@GetMapping(value = "/actions")
 	public String actionsTest() {
-		return "app-with-actions version:0.0.2a";
+		return "app-with-actions version:0.0.3";
 	}
 
 	@GetMapping("/students")

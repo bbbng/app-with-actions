@@ -58,7 +58,8 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script_stop: true
         script: |
-          # 8080 포트를 사용하는 프로세스를 kill하는 명령
+          # 8080 포트를 사용하는 프로세스를 kill하는 명령 
+          # "|| true"가 있어서 kill할 프로세스가 없더라도 스크립트 실행이 중단되지 않는다.
           sudo fuser -k -TERM -n tcp 8080 || true
           rm -rf /home/ubuntu/app/deploy
           mkdir /home/ubuntu/app/deploy

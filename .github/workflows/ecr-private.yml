@@ -56,7 +56,6 @@ jobs:
     - name: retrieve ECS task definition JSON
       id: retrieve-task-def
       env:
-        IMAGE_TAG: latest
         TASK_DEF: firsttask-def01
       run: |
         aws ecs describe-task-definition --task-definition $TASK_DEF --query taskDefinition > task-definition.json

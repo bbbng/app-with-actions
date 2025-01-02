@@ -46,7 +46,7 @@ jobs:
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-    - name: ECS task definition JSON
+    - name: retrieve ECS task definition JSON
       id: retrieve-task-def
       env:
         IMAGE_TAG: latest

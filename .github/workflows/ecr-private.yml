@@ -34,7 +34,7 @@ jobs:
       env:
         REGISTRY: 724772050614.dkr.ecr.ap-northeast-2.amazonaws.com
         #REGISTRY_ALIAS: ${{ secrets.ECR_ID }}
-        REPOSITORY: ecr-private-test2
+        REPOSITORY: bbbng/app-with-actions
         IMAGE_TAG: latest
       run: |
         aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $REGISTRY

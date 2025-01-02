@@ -35,6 +35,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
       
     - name: Build, tag, and push docker image to Amazon ECR Public
+      id: build-image
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         #REGISTRY_ALIAS: ${{ secrets.ECR_ID }}
@@ -43,6 +44,7 @@ jobs:
       run: |
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: ECS task definition JSON
       id: retrieve-task-def
@@ -58,7 +60,7 @@ jobs:
       with:
         task-definition: task-definition.json
         container-name: first-ecs-container-01
-        image: 724772050614.dkr.ecr.ap-northeast-2.amazonaws.com/bbbng/app-with-actions:latest
+        image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2

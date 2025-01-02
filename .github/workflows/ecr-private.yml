@@ -2,6 +2,13 @@ name: Build and Push Docker Image To AWS ECR
 on:
   workflow_dispatch
 
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: bbbng/app-with-actions
+  ECS_SERVICE: first-ecs-service-01
+  ECS_CLUSTER: FirstECSCluster01
+  CONTAINER_NAME: first-ecs-container-01
+
 jobs:
   build-push-image:
     runs-on: ubuntu-latest
@@ -28,7 +35,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -39,7 +46,7 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         #REGISTRY_ALIAS: ${{ secrets.ECR_ID }}
-        REPOSITORY: bbbng/app-with-actions
+        REPOSITORY: ${{ env.ECR_REPOSITORY }}
         IMAGE_TAG: latest
       run: |
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
@@ -50,8 +57,9 @@ jobs:
       id: retrieve-task-def
       env:
         IMAGE_TAG: latest
+        TASK_DEF: firsttask-def01
       run: |
-        aws ecs describe-task-definition --task-definition firsttask-def01 --query taskDefinition > task-definition.json
+        aws ecs describe-task-definition --task-definition $TASK_DEF --query taskDefinition > task-definition.json
         echo "task-def-file=task-definition.json" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the Amazon ECS task definition
@@ -59,13 +67,13 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ steps.retrieve-task-def.outputs.task-def-file }}
-        container-name: first-ecs-container-01
+        container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: first-ecs-service-01
-        cluster: FirstECSCluster01
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true

@@ -43,3 +43,27 @@ jobs:
       run: |
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: ECS task definition JSON
+      id: retrieve-task-def
+      env:
+        IMAGE_TAG: latest
+      run: |
+        aws ecs describe-task-definition --task-definition firsttask-def01 --query taskDefinition > task-definition.json
+        echo "task-def-file=task-definition.json" >> $GITHUB_OUTPUT
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: first-ecs-container-01
+        image: 724772050614.dkr.ecr.ap-northeast-2.amazonaws.com/bbbng/app-with-actions:latest
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: first-ecs-service-01
+        cluster: FirstECSCluster01
+        wait-for-service-stability: true
